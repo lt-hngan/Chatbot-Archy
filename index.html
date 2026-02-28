@@ -758,9 +758,9 @@
             t = t.replace(/\n\n/g, '<br><br>');
             t = t.replace(/\n/g, '<br>');
             
-            // Chỉ bọc riêng biến x (ví dụ: x-axis, x-coordinate) vào thẻ span.math-var để CSS dịch lên
-            // Các biến y, xy sẽ không bị ảnh hưởng và giữ nguyên vị trí dịch xuống
-            t = t.replace(/\$\$x\$\$/g, (match) => `<span class="math-var">${match}</span>`);
+            // Chỉ bọc riêng biến x (ví dụ: x-axis) và biến a (ví dụ: coefficient a) vào thẻ span.math-var để CSS dịch lên
+            // Các biến y, xy và các công thức khác sẽ không bị ảnh hưởng và giữ nguyên vị trí dịch xuống
+            t = t.replace(/\$\$(x|a)\$\$/g, (match) => `<span class="math-var">${match}</span>`);
             
             return t;
         }
