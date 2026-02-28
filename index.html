@@ -370,7 +370,6 @@
         };
 
         // --- BƯỚC 1: ĐIỀN CẤU HÌNH FIREBASE CỦA BẠN VÀO ĐÂY ---
-        // Thay thế các chữ "YOUR_..." bằng thông tin bạn lấy được từ Firebase Console
         const firebaseConfig = {
           apiKey: "AIzaSyAq3_p3fRQ8vpuXYPffJgIHpRSyASiRwZA",
           authDomain: "archy-chatbot.firebaseapp.com",
@@ -385,11 +384,12 @@
         let db = null;
         let auth = null;
         let currentUser = null;
-        let appId = typeof __app_id !== 'undefined' ? __app_id : 'archy-chatbot-live';
+        
+        // FIX LỖI: Buộc tất cả các nền tảng dùng chung một ID đường dẫn thay vì tuỳ thuộc vào môi trường (Canvas/Render)
+        const appId = 'archy-chatbot-live-global';
 
         async function initFirebase() {
             try {
-                // Ưu tiên môi trường thử nghiệm (nếu có), nếu không thì dùng firebaseConfig của bạn
                 let activeConfig;
                 if (typeof __firebase_config !== 'undefined') {
                     activeConfig = JSON.parse(__firebase_config);
@@ -404,7 +404,6 @@
                 auth = getAuth(app);
                 db = getFirestore(app);
 
-                // Xác thực tài khoản ẩn danh để có quyền lưu dữ liệu
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                     await signInWithCustomToken(auth, __initial_auth_token);
                 } else {
@@ -464,7 +463,7 @@
         };
 
         function init() {
-            initFirebase(); // Khởi tạo Firebase ngầm
+            initFirebase(); 
 
             fontSelect.addEventListener('change', (e) => setFont(e.target.value));
             chatFontSelect.addEventListener('change', (e) => setFont(e.target.value));
@@ -580,7 +579,7 @@
             });
 
             // Lưu lên Firebase Cloud
-            if (currentUser && db) {
+            if (db) { // Đã bỏ điều kiện currentUser để tránh trễ đồng bộ
                 try {
                     const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'chat_logs', currentGroup);
                     await setDoc(docRef, {
@@ -596,7 +595,7 @@
 
         // --- HỆ THỐNG LẮNG NGHE DỮ LIỆU ĐÁM MÂY (CHO GIÁO VIÊN) ---
         function startTeacherListener() {
-            if (!currentUser || !db) {
+            if (!db) {
                 teacherGrid.innerHTML = '<div class="col-span-full text-center text-red-500 mt-10">Cloud disconnected. Unable to fetch live data.</div>';
                 return;
             }
