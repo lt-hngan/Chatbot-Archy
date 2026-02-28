@@ -372,14 +372,14 @@
         // --- BƯỚC 1: ĐIỀN CẤU HÌNH FIREBASE CỦA BẠN VÀO ĐÂY ---
         // Thay thế các chữ "YOUR_..." bằng thông tin bạn lấy được từ Firebase Console
         const firebaseConfig = {
-  apiKey: "AIzaSyAq3_p3fRQ8vpuXYPffJgIHpRSyASiRwZA",
-  authDomain: "archy-chatbot.firebaseapp.com",
-  projectId: "archy-chatbot",
-  storageBucket: "archy-chatbot.firebasestorage.app",
-  messagingSenderId: "297839241279",
-  appId: "1:297839241279:web:f5b772d0b92371744ab08a",
-  measurementId: "G-7Q87ZXGYS5"
-};
+          apiKey: "AIzaSyAq3_p3fRQ8vpuXYPffJgIHpRSyASiRwZA",
+          authDomain: "archy-chatbot.firebaseapp.com",
+          projectId: "archy-chatbot",
+          storageBucket: "archy-chatbot.firebasestorage.app",
+          messagingSenderId: "297839241279",
+          appId: "1:297839241279:web:f5b772d0b92371744ab08a",
+          measurementId: "G-7Q87ZXGYS5"
+        };
 
         // Firebase Setup
         let db = null;
@@ -389,18 +389,18 @@
 
         async function initFirebase() {
             try {
-                // Ưu tiên môi trường thử nghiệm (nếu có), nếu không thì dùng myFirebaseConfig của bạn
-                let firebaseConfig;
+                // Ưu tiên môi trường thử nghiệm (nếu có), nếu không thì dùng firebaseConfig của bạn
+                let activeConfig;
                 if (typeof __firebase_config !== 'undefined') {
-                    firebaseConfig = JSON.parse(__firebase_config);
-                } else if (myFirebaseConfig.apiKey !== "YOUR_API_KEY") {
-                    firebaseConfig = myFirebaseConfig;
+                    activeConfig = JSON.parse(__firebase_config);
+                } else if (typeof firebaseConfig !== 'undefined' && firebaseConfig.apiKey) {
+                    activeConfig = firebaseConfig;
                 } else {
                     console.log("Chưa thiết lập Firebase. Hệ thống chỉ chạy cục bộ, tính năng Giáo viên tạm thời bị vô hiệu hoá.");
                     return;
                 }
 
-                const app = initializeApp(firebaseConfig);
+                const app = initializeApp(activeConfig);
                 auth = getAuth(app);
                 db = getFirestore(app);
 
