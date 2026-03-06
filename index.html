@@ -147,6 +147,24 @@
             </div>
         </div>
 
+        <!-- EXPAND CONVERSATION MODAL -->
+        <div id="expand-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center backdrop-blur-sm p-4 md:p-8">
+            <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-4xl h-full max-h-[90vh] flex flex-col transform transition-all relative">
+                <div class="px-6 py-5 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center shrink-0">
+                    <h3 class="text-xl font-bold flex items-center gap-3">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--theme-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                        <span id="expand-modal-title">Group Conversation</span>
+                    </h3>
+                    <button id="expand-close-btn" class="p-2 bg-gray-100 dark:bg-gray-700 hover:bg-red-100 hover:text-red-500 dark:hover:bg-red-900/40 rounded-full transition-colors focus:outline-none">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                </div>
+                <div id="expand-modal-content" class="flex-1 overflow-y-auto p-6 custom-scrollbar bg-[#f8f9fa] dark:bg-gray-900/50 rounded-b-3xl">
+                    <!-- Chat history goes here -->
+                </div>
+            </div>
+        </div>
+
         <!-- SETUP SCREEN -->
         <div id="setup-screen" class="flex-1 overflow-y-auto w-full relative custom-scrollbar">
             <!-- Wrap content in a min-h-full div to ensure vertical centering on large screens, but full scroll on small screens -->
@@ -345,43 +363,31 @@
 
         // MẢNG DỮ LIỆU KỊCH BẢN CHATBOT
         const scriptData = {
-            "0": { type: "mcq", text: "Hello Group [group number]! I am Archy - your AI teaching assisstant today. 😎 Which question on Worksheet 4 are you currently stuck on?", options: [{text: "Question 1", next: "2"}, {text: "Question 2", next: "16"}, {text: "Question 3", next: "20"}, {text: "Question 4", next: "33"}] },
-            "1": { type: "mcq", text: "That’s great to hear! 😍 Which question on Worksheet 4 do you want to ask next?", options: [{text: "Question 1", next: "2"}, {text: "Question 2", next: "16"}, {text: "Question 3", next: "20"}, {text: "Question 4", next: "33"}, {text: "We don’t have any questions left!", next: "36"}] },
-            "2": { type: "mcq", text: "Question 1 asks you to find the coordinates of specific points and identify what we are looking for. Which part is confusing you? 🤔", options: [{text: "How to find the coordinate of the left base?", next: "3"}, {text: "How to find the coordinate of the right base?", next: "5"}, {text: "How to find the coordinate of the specific point on the bridge?", next: "10"}, {text: "What does the height of the vertex of the bridge means?", next: "14"}] },
-            "3": { type: "mcq", text: "Just to remind you, we are choosing an $$xy$$-coordinate system so that the left base of the bridge pillar is placed at the origin! Now, what is the coordinates of the origin? 👀", options: [{text: "We don’t remember… 😭", next: "4"}, {text: "We understand now! We want to ask about another part of question 1.", next: "2"}, {text: "We understand now! We want to ask about another question.", next: "1"}] },
-            "4": { type: "mcq", text: "😅 Please remember from now on, the origin of an $$xy$$-coordinate system is always $$(0,0)$$!", options: [{text: "We understand now! We want to ask about another part of question 1.", next: "2"}, {text: "We understand now! We want to ask about another question.", next: "1"}] },
-            "5": { type: "mcq", text: "😉👌 Let’s look at this figure. We set the left base at the origin $$(0, 0)$$. The $$x$$-axis is the ground. Now try to guess and choose the most correct reasoning to find the coordinates of the right base:", image: "https://i.postimg.cc/Kv2vsPRq/question-5.png", options: [{text: "Because the base is on the ground, the $$x$$-coordinate is 0, and the distance of 27m means the $$y$$-coordinate is 27. The coordinates are $$(0, 27)$$.", next: "7"}, {text: "Because the base is on the ground, the $$y$$-coordinate is 0, and since it's 27m away from the origin, the $$x$$-coordinate is 27. The coordinates are $$(27, 0)$$.", next: "9"}, {text: "Our group thinks that the $$y$$-coordinate is 0, but we don't know how to find the $$x$$-coordinate.", next: "6"}] },
-            "6": { type: "input", text: "That’s completely fine. 😇 Look at the figure again and remember our choice of the coordinate system.\n\nThis means the $$x$$-axis represents the ground, and the distance from a point on the ground to the left base is exactly the distance from a point on the $$x$$-axis to the origin $$O(0, 0)$$. So, let's try again: Because the base is on the ground, the $$y$$-coordinate is 0, and since it's $$27m$$ away from the origin, the $$x$$-coordinate is …?", answers: { "27": "9", "default": "8" } },
-            "7": { type: "input", text: "Almost there! 😁 Just remember something we learned: \"a point on the $$x$$-axis always has a $$y$$-coordinate of 0\". Let's try one more time to find the coordinates of the right base: the $$y$$-coordinate is 0, and since it's $$27m$$ away from the origin, the $$x$$-coordinate is …?", answers: { "27": "9", "default": "8" } },
-            "8": { type: "mcq", text: "Nice guess, but try better next time 😊\nThe distance from the right base to the left base is 27m, and so its distance to the origin $$O(0, 0)$$ is 27. Therefore, its $$x$$-coordinate is 27.", options: [{text: "We understand now! I want to ask about another part of question 1.", next: "2"}, {text: "We understand now! I want to ask about another question.", next: "1"}] },
-            "9": { type: "mcq", text: "That is correct! 🤩 Let me know if you need anything else.", options: [{text: "We want to ask about another part of question 1.", next: "2"}, {text: "We want to ask about another question.", next: "1"}] },
-            "10": { type: "mcq", text: "Let me ask a quick question so I can help your group better! What difficulty are you facing right now? 🤔", options: [{text: "We are not very sure how the height and distance relate to the coordinates.", next: "11"}, {text: "We don't know if “away from the base” means the left base or the right base, so we can't decide on the final answer.", next: "13"}] },
-            "11": { type: "mcq", text: "😉👌 Let’s look at this figure together and remember that our $$x$$-axis represents the ground. This means the $$x$$-coordinate represents the horizontal distance, and the $$y$$-coordinate represents the vertical height. Now let’s take a guess:", image: "https://i.postimg.cc/FzQm8vsR/question-11.png", options: [{text: "(2.26, 20)", next: "9"}, {text: "(20, 2.26)", next: "12"}] },
-            "12": { type: "mcq", text: "Be careful, you might have them backward! 🤦 Look at the figure again. Remember that our $$x$$-axis represents the ground, meaning the $$x$$-coordinate shows the horizontal distance, and the $$y$$-coordinate shows the vertical height.", options: [{text: "We understand now! We want to ask about another part of question 1.", next: "2"}, {text: "We understand now! We want to ask about another question.", next: "1"}] },
-            "13": { type: "input", text: "You don't need to overthink it! 😅 Actually, because of the symmetry of the parabola, whether you think it's from the left base or the right base, you will still get the correct answer. It will give you the exact same parabola! If you don't believe me, try typing in the coordinates $$(x, y)$$ of this point and remember to use ‘dot’ for decimal (for example: (1.5, 5)):", answers: { "(2.26, 20)": "9", "(24.74, 20)": "9", "(2.26,20)": "9", "(24.74,20)": "9", "(20, 2.26)": "12", "(20,2.26)": "12", "(20, 24.74)": "12", "(20,24.74)": "12", "default": "11" } },
-            "14": { type: "mcq", text: "Let’s take a look at this figure and take a guess! 👀 The height of the vertex of the bridge from the ground is…", image: "https://i.postimg.cc/BbgWz1zW/question-14.png", options: [{text: "The $$y$$-coordinate of the parabola's vertex.", next: "9"}, {text: "The $$x$$-coordinate of the parabola's vertex.", next: "15"}, {text: "We don't know T.T", next: "15"}] },
-            "15": { type: "mcq", text: "Don’t worry, let me give you a little hint 🤭: the $$x$$-coordinate represents the horizontal distance, and the $$y$$-coordinate represents the vertical height. Let's try again! The height of the vertex of the bridge from the ground is…", options: [{text: "The $$y$$-coordinate of the parabola's vertex.", next: "9"}] },
-            "16": { type: "mcq", text: "Question 2 asks you to state the mathematical model for the problem. What is confusing you? 🤔", options: [{text: "What does “mathematical model” mean? I don’t know what I need to write down.", next: "17"}, {text: "We don't understand how the coordinates identified in Question 1 relate to the mathematical problem.", next: "18"}] },
-            "17": { type: "mcq", text: "Don’t worry, it is really easy! To construct a mathematical model, write down the mathematical hypothesis and mathematical goal (request) that you have detected from the real-world problem. 🤯", options: [{text: "We don't understand how the coordinates identified in Question 1 relate to the mathematical problem.", next: "18"}, {text: "We understand now!", next: "1"}] },
-            "18": { type: "mcq", text: "Let’s think about this: What can we tell about the three points $$(0,0)$$, $$(27,0)$$, and $$(2.26,20)$$? 🤔💭", options: [{text: "They belong to $$(P)$$", next: "19"}, {text: "We understand now!", next: "1"}] },
-            "19": { type: "mcq", text: "That’s right! Now that is exactly the mathematical hypothesis that we are looking for! 🫨", options: [{text: "We understand now!", next: "1"}] },
-            "20": { type: "mcq", text: "Question 3 is where we do the heavy mathematical solving! What part are you stuck on? 🤔", options: [{text: "Determining the quadratic function.", next: "21"}, {text: "Finding the vertex of the parabola.", next: "26"}, {text: "Oh we think that we know how to answer this question now. We want to ask about another question.", next: "1"}] },
-            "21": { type: "mcq", text: "That is a tough part! 🙂‍↕️ To determine the quadratic function $$y=ax^2+bx+c$$ is to determine the coefficients $$a,b,c$$.\n\nNow I'll ask a question to see if you can guess what we need to do next: when we know that the point $$(2.26, 20)$$ is on the graph of the function $$y = ax^2 + bx + c$$, what conclusion can we make about the coefficients $$a, b, c$$?", options: [{text: "$$20 = a(2.26)^2 + b(2.26) + c$$", next: "24"}, {text: "$$2.26 = a(20)^2 + b(20) + c$$", next: "23"}, {text: "Please give us a hint :<", next: "22"}] },
-            "22": { type: "mcq", text: "Don’t worry 😉, let me give you a little hint by recalling something we learned in the Functions lesson: \"if a point with coordinates $$(x_0, y_0)$$ belongs to the graph of a function $$y = f(x)$$, then $$y_0 = f(x_0)$$\". Simply put, if a point is on the graph of a function, its coordinates will satisfy that function's equation!\n\nApplying this, when the point $$(2.26, 20)$$ is on the graph of $$y = ax^2 + bx + c$$, which of the following equations do we get?", options: [{text: "$$20 = a.(2.26)^2+b.2.26+c$$", next: "24"}, {text: "$$2.26 = a(20)^2 + b(20) + c$$", next: "23"}] },
-            "23": { type: "mcq", text: "Be careful, you have them backward! 😭 We need to substitute the $$x$$-coordinate into the $$x$$ variable in the equation, and the $$y$$-coordinate into the $$y$$ variable.", options: [{text: "We understand our mistake. We want to know what we need to do next to find $$a,b,c$$.", next: "24"}, {text: "Oh we think that we know how to asnwer this question now. We want to ask about another question.", next: "1"}] },
-            "24": { type: "mcq", text: "Awesome! 🔥 I believe you can now confidently do the same for the other two points, $$(0, 0)$$ and $$(27, 0)$$.\n\nAfter doing that, we will get 3 linear equations with the variables $$a, b, c$$, right? Let me know how far have you got.", options: [{text: "We have found the 3 linear equations with variables $$a, b, c$$, but we don't know how to find $$a, b, c$$.", next: "25"}, {text: "We can find $$a,b,c$$. We want to ask about another question.", next: "1"}, {text: "We don’t have any questions left!", next: "36"}] },
-            "25": { type: "mcq", text: "Don't worry! 🤭 In your calculator's menu, look for the \"Equation/Func\" feature, then choose \"Simul Equation\" (System of linear equations) with 3 unknowns.\n\nI will guide you on how to enter the data for the equation $$a(27)^2 + b(27) + c = 0$$, and you can do the same for the other 2 equations! 🫵\n\nIn this equation, our variables are $$a, b, c$$, which correspond to the variables $$x, y, z$$ in the calculator. In the calculator, we will enter the coefficient of each variable sequentially (these are the numbers in front of $$a, b, c$$) and the constant term (the number on the other side of the = sign in the equation). So for this equation, we will enter these numbers in order: $$27^2$$, $$27$$, $$1$$, $$0$$.", options: [{text: "Yay, we have solved the system of equations! Now we want to ask about another question.", next: "1"}, {text: "Yay, we have solved the system of equations! We don’t have any questions left!", next: "36"}] },
-            "26": { type: "input", text: "Before telling you how to find the vertex of a parabola, I want to make sure you have found the correct quadratic function. 👀 Please type in the coefficient $$a$$ of your quadratic function (round to the nearest thousandth)", answers: { "-0.358": "29", "default": "27" } },
-            "27": { type: "mcq", text: "Uh oh, that is not correct 💔 Check your calculations and try again, or I can help you!", options: [{text: "We want to try answering again.", next: "28"}, {text: "We want some help in determining the quadratic function.", next: "21"}] },
-            "28": { type: "input", text: "Let’s try again! 💪 Please type in the coefficient $$a$$ of your quadratic function (round to the nearest thousandth)", answers: { "-0.358": "29", "default": "27" } },
-            "29": { type: "input", text: "That is correct! 🫨 Now I believe that you have found the correct quadratic function.\n\nNow let me review a lesson with you! To find the $$y$$-coordinate of the vertex of a parabola, you can use 1 of these 3 methods:\n\n1. Apply the formula $$\\left(-\\frac{b}{2a}, -\\frac{\\Delta}{4a}\\right)$$.\n\n2. Find the $$x$$-coordinate of the vertex using the formula $$x = -\\frac{b}{2a}$$, then substitute it into the function's equation to calculate $$y$$.\n\n3. Use the quadratic equation solver on your calculator, press the = button until you reach the $$y_{max}$$ (or $$y_{min}$$) line.\n\nTry to apply 1 of these 3 methods to find the $$y$$-coordinate of the vertex for the graph of the function $$y = -0.358x^2 + 9.658x$$ (round to the nearest tenth).", answers: { "65.1": "32", "13.5": "30", "default": "31" } },
-            "30": { type: "input", text: "Be careful, you have them mixed up! 😭 The number you just entered is the $$x$$-coordinate of the vertex, not the $$y$$-coordinate! Try answering again.", answers: { "65.1": "32", "default": "31" } },
-            "31": { type: "input", text: "Be careful with your calculations! 🤦 Try calculating it again (or try a different method)!", answers: { "65.1": "32", "default": "31" } },
-            "32": { type: "mcq", text: "Excellent! You all did great! 💯 Let me know if you need any more help.", options: [{text: "We want to ask another question.", next: "1"}, {text: "We don’t have any questions left!", next: "36"}] },
-            "33": { type: "mcq", text: "For Question 4, you just need to bring your math answer back to reality. 😁 If the $$y$$-coordinate of the vertex is 65.1, what is the estimated height of the bridge’s vertex?", options: [{text: "About 65.1 meters.", next: "34"}, {text: "We are still confused.", next: "35"}, {text: "We understand now. We want to ask another question.", next: "1"}, {text: "We understand now. We don’t have any questions left!", next: "36"}] },
-            "34": { type: "mcq", text: "That is correct! Congratulations! 🔥", options: [{text: "We understand now. We want to ask another question.", next: "1"}, {text: "We understand now. We don’t have any questions left!", next: "36"}] },
-            "35": { type: "mcq", text: "It is okay 😅, you just need to remember that our $$y$$-coordinate represents vertical height, and the unit is meters. Therefore, the estimated height of the bridge’s vertex is about 65.1 meters.", options: [{text: "We understand now. We want to ask another question.", next: "1"}, {text: "We understand now. We don’t have any questions left!", next: "36"}] },
-            "36": { type: "end", text: "Congratulations! 🥳🎉✨🎊🏅💯💥🔥 I'm sure that after this conversation, you can easily complete the worksheet and confidently present your answers to the class. Let's quickly write everything down before the discussion time ends!" }
+            "0": { type: "mcq", text: "Hello Group [group number]! I am Archy - your AI teaching assisstant today. 💪😎 Which question are you currently stuck on?", options: [{text: "Question 1", next: "2"}, {text: "Question 2", next: "13"}] },
+            "1": { type: "mcq", text: "That’s great to hear! 🥳 Which question on Worksheet 4 do you want to ask next?", options: [{text: "Question 1", next: "2"}, {text: "Question 2", next: "13"}, {text: "We don’t have any questions left!", next: "24"}] },
+            "2": { type: "mcq", text: "Question 1 asks you to find the quadratic function $$y = ax^2 + bx + c$$. What part is confusing you? 🤔", options: [{text: "What do we need to do?", next: "3"}, {text: "How to use the given points $$(0,0), (162,0)$$, and $$(10,43)$$?", next: "4"}, {text: "After using the given points, how can we solve for $$a,b,c$$?", next: "8"}, {text: "We understand now! We want to ask about another question.", next: "1"}] },
+            "3": { type: "mcq", text: "To determine the quadratic function $$y=ax^2+bx+c$$ is to determine the coefficients $$a,b,c$$.\n\nSince we know 3 specific points that lie on the arch, we can use their coordinates to create a system of equations to solve for $$a,b,c$$! 🤯", options: [{text: "How to use the given points $$(0,0), (162,0)$$, and $$(10,43)$$?", next: "4"}, {text: "After using the given points, how can we solve for $$a,b,c$$?", next: "8"}, {text: "We understand now! We want to ask about another question.", next: "1"}] },
+            "4": { type: "mcq", text: "Now I'll ask a question to see if you can guess what we need to do next 🤭: when we know that the point $$(10,43)$$ is on the graph of the function $$y = ax^2 + bx + c$$, what conclusion can we make about the coefficients $$a, b, c$$?", options: [{text: "$$43 = a(10)^2 + b(10) + c$$", next: "7"}, {text: "$$10 = a(43)^2 + b(43) + c$$", next: "6"}, {text: "Please give us a hint :<", next: "5"}, {text: "We understand now! We want to ask about another question.", next: "1"}] },
+            "5": { type: "mcq", text: "Don’t worry 😉, let me give you a little hint by recalling something we learned in the Functions lesson: \"if a point with coordinates $$(x_0, y_0)$$ belongs to the graph of a function $$y = f(x)$$, then $$y_0 = f(x_0)$$\". Simply put, if a point is on the graph of a function, its coordinates will satisfy that function's equation! 🫨\n\nApplying this, the point $$(10,43)$$ is on the graph of the function $$y = ax^2 + bx + c$$, what conclusion can we make? 🤔", options: [{text: "$$43 = a(10)^2 + b(10) + c$$", next: "7"}, {text: "$$10 = a(43)^2 + b(43) + c$$", next: "6"}, {text: "We understand now! We want to ask about another question.", next: "1"}] },
+            "6": { type: "mcq", text: "Be careful, you have them backward! 😵‍💫 We need to substitute the $$x$$-coordinate into the $$x$$ variable in the equation, and the $$y$$-coordinate into the $$y$$ variable.", options: [{text: "We understand our mistake. We want to know what we need to do next to find $$a,b,c$$.", next: "7"}, {text: "Oh we think that we know how to asnwer this question now. We want to ask about another question.", next: "1"}] },
+            "7": { type: "mcq", text: "Awesome! 🔥 I believe you can now confidently do the same for the other two points, $$(0, 0)$$ and $$(162, 0)$$. 🤭\n\nAfter doing that, we will get 3 linear equations with the variables $$a, b, c$$, right? Let me know how far have you got.", options: [{text: "We have found the 3 linear equations with variables $$a, b, c$$, but we don't know how to find $$a, b, c$$.", next: "8"}, {text: "We can find $$a,b,c$$. We want to ask about another question.", next: "1"}, {text: "We don’t have any questions left!", next: "24"}] },
+            "8": { type: "input", text: "Don't worry! 😉 In your calculator's menu, look for the \"Equation/Func\" feature, then choose \"Simul Equation\" (System of linear equations) with 3 unknowns.\n\nI will guide you on how to enter the data for the equation $$a(162)^2 + b(162) + c = 0$$, and you can do the same for the other 2 equations! 💪\n\nIn this equation, our variables are $$a, b, c$$, which correspond to the variables $$x, y, z$$ in the calculator. In the calculator, we will enter the coefficient of each variable sequentially (these are the numbers in front of $$a, b, c$$) and the constant term (the number on the other side of the = sign in the equation). So for this equation, we will enter these numbers in order: $$162^2$$, $$162$$, $$1$$, $$0$$. 👌\n\nLet’s see if you can catch up with me. Please type in the value of $$a$$ (round to the nearest thousandth, remember to use ‘dot’ for decimal places).", answers: { "-0.028": "12", "default": "9" } },
+            "9": { type: "mcq", text: "Uh oh, that is not correct 😭 Try calculate again, or I can help you if you want.", options: [{text: "We want to try answering again.", next: "10"}, {text: "We want to check our system of equations.", next: "11"}] },
+            "10": { type: "input", text: "Sure! 👌 Please type in the value of $$a$$ (round to the nearest thousandth, remember to use ‘dot’ for decimal places).", answers: { "-0.028": "12", "default": "9" } },
+            "11": { type: "mcq", text: "No problem! 👌 The system of equations you should have obtain is here:\n\n$$\\left\\{ \\begin{align} & 0a+0b+c=0 \\\\ & {{162}^{2}}a+162b+c=0 \\\\ & {{10}^{2}}a+10b+c=43 \\end{align} \\right.$$", options: [{text: "Oh, we understand our mistake! We want to try answering again.", next: "10"}, {text: "We understand now! We want to ask about another question.", next: "1"}, {text: "We understand now! We don’t have any questions left!", next: "24"}] },
+            "12": { type: "mcq", text: "Great job! 😍 Tell me if you need anything else!", options: [{text: "We want to ask about another question.", next: "1"}, {text: "We don’t have any questions left!", next: "24"}] },
+            "13": { type: "mcq", text: "Question 2 asks you to calculate the height of the arch. What is confusing you? 🤔", options: [{text: "How is “the height of the arch” related to the quadratic function we have found in Question 1?", next: "14"}, {text: "How to find the coordinates of the vertex?", next: "17"}] },
+            "14": { type: "mcq", text: "Let’s take a look at the figure! 👀 The height of the arch from the ground is the red line segment in this figure. Let’s take a guess: the height of the arch is… 🤔", image: "https://i.postimg.cc/pdrjqxPb/new.png", options: [{text: "The $$y$$-coordinate of the parabola's vertex.", next: "16"}, {text: "The $$x$$-coordinate of the parabola's vertex.", next: "15"}, {text: "We don't know T.T", next: "15"}] },
+            "15": { type: "mcq", text: "Don’t worry 😅, let me give you a hint: the $$x$$-axis represents the horizontal ground, and the $$y$$-axis represents the vertical height. Therefore, the maximum height corresponds to the $$y$$-coordinate of the vertex!", options: [{text: "We understand that the height of the arch is the $$y$$-coordinate of the parabola's vertex. But how can we find this number?", next: "17"}, {text: "We understand now! We want to ask about another question.", next: "1"}, {text: "We understand now! We don’t have any questions left!", next: "24"}] },
+            "16": { type: "mcq", text: "That is totally correct! 🤩 Let me know if you need anything else!", options: [{text: "We understand that the height of the arch is the $$y$$-coordinate of the parabola's vertex. But how can we find this number?", next: "17"}, {text: "We understand now! We want to ask about another question.", next: "1"}, {text: "We understand now! We don’t have any questions left!", next: "24"}] },
+            "17": { type: "input", text: "Great! Before telling you how to find the vertex of a parabola, I want to make sure you have found the correct quadratic function. 👀 Please type in the coefficient $$b$$ of your quadratic function (round to the nearest thousandth)", answers: { "4.583": "20", "default": "18" } },
+            "18": { type: "mcq", text: "Uh oh, that is not correct 💔 Check your calculations and try again, or I can help you!", options: [{text: "We want to try again!", next: "19"}, {text: "We want some help in determining the quadratic function.", next: "3"}] },
+            "19": { type: "input", text: "Let’s try again! 💪 Please type in the coefficient $$b$$ of your quadratic function (round to the nearest thousandth)", answers: { "4.583": "20", "default": "18" } },
+            "20": { type: "input", text: "That is correct! 💯 Now I believe that you have found the correct quadratic function.\n\nNow let me review a lesson with you! To find the $$y$$-coordinate of the vertex of a parabola, you can use 1 of these 3 methods:\n\n1. Apply the formula $$\\left(-\\frac{b}{2a}, -\\frac{\\Delta}{4a}\\right)$$.\n\n2. Find the $$x$$-coordinate of the vertex using the formula $$x = -\\frac{b}{2a}$$, then substitute it into the function's equation to calculate $$y$$.\n\n3. Use the quadratic equation solver on your calculator, press the = button until you reach the $$y_{max}$$ (or $$y_{min}$$) line.\n\nTry to apply 1 of these 3 methods to find the $$y$$-coordinate of the vertex for the graph of the $$y = -\\frac{43}{1520}x^2 + \\frac{3483}{760}x$$\n\n(round to the nearest tenth if needed). 🤔", answers: { "81": "21", "185.6": "23", "default": "22" } },
+            "21": { type: "input", text: "Be careful, you have them mixed up! 😫 The number you just entered is the $$x$$-coordinate of the vertex, not the $$y$$-coordinate! Try answering again.", answers: { "185.6": "23", "default": "22" } },
+            "22": { type: "input", text: "Be careful with your calculations! 🤧 Try calculating it again (or try a different method)!", answers: { "185.6": "23", "default": "22" } },
+            "23": { type: "mcq", text: "Excellent! ✨ You all did great! Let me know if you need any more help.", options: [{text: "We want to ask about another question.", next: "1"}, {text: "We don’t have any questions left!", next: "24"}] },
+            "24": { type: "end", text: "Congratulations! 🥳🎉🎊🏆🏅🔥💥💯✨ I'm sure that after this conversation, you can easily complete the worksheet and confidently present your answers to the class. Let's quickly write everything down before the discussion time ends!" }
         };
 
         // --- BƯỚC 1: ĐIỀN CẤU HÌNH FIREBASE CỦA BẠN VÀO ĐÂY ---
@@ -441,6 +447,7 @@
         let chatHistoryData = []; 
         let teacherUnsubscribe = null;
         let groupToDelete = null; // Trạng thái dùng cho modal xoá nhóm
+        let expandedGroupId = null; // Trạng thái dùng cho modal xem toàn màn hình
         
         // DOM Elements
         const appContainer = document.getElementById('app-container');
@@ -476,6 +483,12 @@
         const deleteCancelBtn = document.getElementById('delete-cancel-btn');
         const deleteConfirmBtn = document.getElementById('delete-confirm-btn');
         const deleteGroupName = document.getElementById('delete-group-name');
+
+        // Expand Modal Elements
+        const expandModal = document.getElementById('expand-modal');
+        const expandCloseBtn = document.getElementById('expand-close-btn');
+        const expandModalTitle = document.getElementById('expand-modal-title');
+        const expandModalContent = document.getElementById('expand-modal-content');
 
         // Allow scroll to be called from dynamically injected HTML
         window.scrollToBottom = () => {
@@ -573,11 +586,23 @@
                     try {
                         await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'chat_logs', groupToDelete));
                         deleteModal.classList.add('hidden');
+                        
+                        // Nếu đang mở full màn hình nhóm bị xoá, đóng modal đó luôn
+                        if (expandedGroupId === groupToDelete) {
+                            expandModal.classList.add('hidden');
+                            expandedGroupId = null;
+                        }
                         groupToDelete = null;
                     } catch (error) {
                         console.error("Lỗi khi xoá dữ liệu: ", error);
                     }
                 }
+            });
+
+            // EXPAND MODAL EVENTS
+            expandCloseBtn.addEventListener('click', () => {
+                expandModal.classList.add('hidden');
+                expandedGroupId = null;
             });
         }
 
@@ -679,6 +704,22 @@
                         </div>
                     `).reverse().join(''); // Reverse để hiển thị câu mới nhất ở trên cùng
 
+                    // Format cho cửa sổ phóng to (mở rộng)
+                    const expandedHtml = (groupData.history || []).map(h => `
+                        <div class="mb-6 border-b border-gray-200 dark:border-gray-700 pb-5 last:border-0 last:mb-0">
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mb-2 font-mono bg-gray-100 dark:bg-gray-800 inline-block px-2 py-0.5 rounded">[${h.time}]</p>
+                            <p class="text-[15px] text-gray-800 dark:text-gray-200 mb-3 leading-relaxed font-medium">Q: ${h.question}</p>
+                            <p class="text-lg font-bold text-[var(--theme-color)] bg-white dark:bg-gray-800 p-3 rounded-xl border border-gray-100 dark:border-gray-700 inline-block shadow-sm">Answer: ${h.answer}</p>
+                        </div>
+                    `).join('');
+
+                    // Nếu modal phóng to đang mở cho nhóm này, hãy cập nhật nội dung mới luôn
+                    if (expandedGroupId === groupData.group) {
+                        expandModalContent.innerHTML = expandedHtml || '<p class="text-gray-400 italic text-center mt-10">No answers yet.</p>';
+                        // Tự động cuộn xuống cuối (hoặc giữ vị trí tuỳ ý)
+                        setTimeout(() => expandModalContent.scrollTop = expandModalContent.scrollHeight, 50);
+                    }
+
                     card.innerHTML = `
                         <div class="flex justify-between items-center mb-3 pb-3 border-b border-gray-100 dark:border-gray-700">
                             <div class="flex items-center gap-2">
@@ -687,9 +728,14 @@
                                     ${groupData.history?.length || 0} interacts
                                 </span>
                             </div>
-                            <button class="delete-group-btn text-gray-300 hover:text-red-500 dark:text-gray-600 dark:hover:text-red-500 transition-colors p-1" data-group="${groupData.group}" title="Xoá dữ liệu">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
-                            </button>
+                            <div class="flex items-center gap-1">
+                                <button class="expand-group-btn text-gray-300 hover:text-[var(--theme-color)] dark:text-gray-600 dark:hover:text-[var(--theme-color)] transition-colors p-1.5 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700" data-group="${groupData.group}" title="Xem toàn màn hình">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+                                </button>
+                                <button class="delete-group-btn text-gray-300 hover:text-red-500 dark:text-gray-600 dark:hover:text-red-500 transition-colors p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20" data-group="${groupData.group}" title="Xoá dữ liệu">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
+                                </button>
+                            </div>
                         </div>
                         <div class="flex-1 overflow-y-auto pr-2 custom-scrollbar">
                             ${historyHtml || '<p class="text-xs text-gray-400 italic">No answers yet.</p>'}
@@ -704,6 +750,31 @@
                         groupToDelete = e.currentTarget.dataset.group;
                         deleteGroupName.textContent = `Group ${groupToDelete}`;
                         deleteModal.classList.remove('hidden');
+                    });
+                });
+                
+                // Gắn sự kiện cho các nút Phóng to
+                teacherGrid.querySelectorAll('.expand-group-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const groupId = e.currentTarget.dataset.group;
+                        expandedGroupId = groupId;
+                        expandModalTitle.textContent = `Group ${groupId} - Live Conversation`;
+                        
+                        // Trích xuất lại HTML phóng to của nhóm này
+                        const gData = data.find(d => d.group === groupId);
+                        if(gData) {
+                            const html = (gData.history || []).map(h => `
+                                <div class="mb-6 border-b border-gray-200 dark:border-gray-700 pb-5 last:border-0 last:mb-0">
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-2 font-mono bg-gray-100 dark:bg-gray-800 inline-block px-2 py-0.5 rounded">[${h.time}]</p>
+                                    <p class="text-[15px] text-gray-800 dark:text-gray-200 mb-3 leading-relaxed font-medium">Q: ${h.question}</p>
+                                    <p class="text-lg font-bold text-[var(--theme-color)] bg-white dark:bg-gray-800 p-3 rounded-xl border border-gray-100 dark:border-gray-700 inline-block shadow-sm">Answer: ${h.answer}</p>
+                                </div>
+                            `).join('');
+                            expandModalContent.innerHTML = html || '<p class="text-gray-400 italic text-center mt-10">No answers yet.</p>';
+                        }
+                        
+                        expandModal.classList.remove('hidden');
+                        setTimeout(() => expandModalContent.scrollTop = expandModalContent.scrollHeight, 50);
                     });
                 });
 
@@ -758,9 +829,8 @@
             t = t.replace(/\n\n/g, '<br><br>');
             t = t.replace(/\n/g, '<br>');
             
-            // Chỉ bọc riêng biến x (ví dụ: x-axis) và biến a (ví dụ: coefficient a) vào thẻ span.math-var để CSS dịch lên
-            // Các biến y, xy và các công thức khác sẽ không bị ảnh hưởng và giữ nguyên vị trí dịch xuống
-            t = t.replace(/\$\$(x|a)\$\$/g, (match) => `<span class="math-var">${match}</span>`);
+            // Chỉ bọc riêng biến x, a, b, c vào thẻ span.math-var để CSS dịch lên
+            t = t.replace(/\$\$(x|a|b|c)\$\$/g, (match) => `<span class="math-var">${match}</span>`);
             
             return t;
         }
@@ -916,8 +986,9 @@
             const node = scriptData[currentNode];
             if (!node || node.type !== "input") return;
 
-            if (!/^[0-9\(\)\-\.\s,]+$/.test(val)) {
-                appendBotMessage("For coordinates, please type '(x, y)' including brackets and a space. Remember to use ‘dot’ for decimal point.", true);
+            // CẬP NHẬT ĐIỀU KIỆN KIỂM TRA: Chỉ cho phép số [0-9], dấu trừ (-), dấu chấm (.) và có thể chứa dấu cách khoảng trắng (\s)
+            if (!/^[0-9\-\.\s]+$/.test(val)) {
+                appendBotMessage("Please enter a valid number. Remember to use 'dot' (.) for decimal point.", true);
                 chatInput.value = '';
                 return;
             }
